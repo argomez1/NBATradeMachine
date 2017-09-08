@@ -10,21 +10,7 @@ public class TradeMachine{
 	private Team[] teams;
 	private ArrayList<TradedPlayer> trades;
 	private int teamCount;
-	
-//	public TradeMachine(Team[] teams){
-//		this.teams = teams;
-//		this.outgoingSalary = new int[teams.length];
-//		this.incomingSalary = new int[teams.length];
-//		this.payrolls = new int[teams.length];
-//		for (int i=0;i<teams.length;i++){
-//			this.payrolls[i] = teams[i].getTaxLevel();
-//			this.outgoingSalary[i] = 0;
-//			this.incomingSalary[i] = 0;
-//			this.mapTeamToIndex.put(teams[i].getName(), i);
-//		}
-//		this.tradeArray = new ArrayList<TradedPlayer>();
-//	}
-	
+		
 	public TradeMachine(){
 		this.teams = new Team[4];
 		this.trades = new ArrayList<TradedPlayer>();
