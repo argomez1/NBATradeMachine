@@ -4,6 +4,18 @@ public class Team{
 	private Player[] roster;
 	private int rosterSize;
 	private int taxLevel;
+	private int incomingSalary;
+	private int outgoingSalary;
+
+	
+	public Team(){
+		this.name = null;
+		this.taxLevel = 0;
+		this.roster = new Player[16];
+		this.rosterSize = 0;
+		this.setOutgoingSalary(0);
+		this.setIncomingSalary(0);
+	}
 	
 	public Team(String name, int taxLevel){
 		this.setName(name);
@@ -67,6 +79,7 @@ public class Team{
 		}
 	}
 	
+	
 	public String getName() {
 		return name;
 	}
@@ -88,6 +101,22 @@ public class Team{
 
 	public void setTaxLevel(int taxLevel) {
 		this.taxLevel = taxLevel;
+	}
+
+	public int getIncomingSalary() {
+		return incomingSalary;
+	}
+
+	public void setIncomingSalary(int incomingSalary) {
+		this.incomingSalary = incomingSalary;
+	}
+
+	public int getOutgoingSalary() {
+		return outgoingSalary;
+	}
+
+	public void setOutgoingSalary(int outgoingSalary) {
+		this.outgoingSalary = outgoingSalary;
 	}
 	
 }

@@ -10,24 +10,32 @@ public class TradeMachineUI{
 		System.out.println("Welcome to the NBA Trade Machine!");
 	}
 	
-	public static void printTeams(Team[] teams){
+	public static void printTeams(Team[] teams, int teamCount){
 		System.out.println("TEAMS:");
 		int maxTeamSize = 0;
-		for (Team team : teams){
-			if (team.getRoster().length > maxTeamSize){
-				maxTeamSize = team.getRoster().length;
+		if (teamCount == 0){
+			return;
+		}
+		else if (teamCount > 1){	
+			for (int i=0; i<teamCount; i++){
+				if (teams[i].getRoster().length > maxTeamSize){
+					maxTeamSize = teams[i].getRoster().length;
+				}
 			}
 		}
-		for (int i=0; i<teams.length; i++){
+		else{
+			maxTeamSize = teams[0].getRoster().length;
+		}
+		for (int i=0; i<teamCount; i++){
 			System.out.format("%-48s ", teams[i].getName());
 		}
 		System.out.println();
-		for (int i=0; i<teams.length; i++){
+		for (int i=0; i<teamCount; i++){
 			System.out.print("---------------------------------               ");
 		}
 		System.out.println();
 		for (int i=0; i<maxTeamSize; i++){
-			for (int j=0; j < teams.length; j++){
+			for (int j=0; j < teamCount; j++){
 				if (i < teams[j].getRosterSize()){
 					System.out.format("%3s %-27s $%-8s      ", 
 							(i+1) + ")", teams[j].getRoster()[i].getName(), 
@@ -70,9 +78,9 @@ public class TradeMachineUI{
 	
 	public static int getTradeAction(){
 		int action;
-		System.out.println("Choose an action:\n1) Add Player to Trade\n2) Remove Player from Trade\n3) Attempt Trade\n"
-				+ "4) Clear All Players From Trade\n5) Restart\n6) Quit");
-		System.out.print("\nEnter action (1-6): ");
+		System.out.println("Choose an action:\n1) Add Team to Trade\n2) Remove Team From Trade\n3) Add Player to Trade\n4) Remove Player from Trade\n5) Attempt Trade\n"
+				+ "6) Clear All Players From Trade\n7) Restart\n8) Quit");
+		System.out.print("\nEnter action (1-8): ");
 		action = scanner.nextInt();
 		
 		return action;
@@ -90,10 +98,10 @@ public class TradeMachineUI{
 		return action;
 	}
 	
-	public static int getTeamForTrade(Team[] teams){
+	public static int getTeamForTrade(Team[] teams, int teamCount){
 		int action;
 		System.out.println("Choose a team to trade from:\n");
-		for (int i=0; i < teams.length; i++){
+		for (int i=0; i < teamCount; i++){
 			System.out.println((i+1)+") " + teams[i].getName());
 		}
 		System.out.print("\nEnter number: ");
@@ -102,7 +110,7 @@ public class TradeMachineUI{
 		return action;
 	}
 	
-	public static int getTeamForTradeTo(Team[] teams){
+	public static int getTeamForTradeTo(Team[] teams, int teamCount){
 		int action;
 		System.out.println("Choose a team to trade to:\n");
 		for (int i=0; i < teams.length; i++){
@@ -139,11 +147,11 @@ public class TradeMachineUI{
 		return action;
 	}
 	
-	public static int removeTeam(ArrayList<String> teams){
+	public static int removeTeam(Team[] teams, int teamCount){
 		int action;
 		System.out.println("Choose a team to remove:\n");
-		for (int i=0; i < teams.size(); i++){
-			System.out.println((i+1)+") " + teams.get(i));
+		for (int i=0; i < teamCount; i++){
+			System.out.println((i+1)+") " + teams[i].getName());
 		}
 		System.out.print("\nEnter number: ");
 		action = scanner.nextInt();

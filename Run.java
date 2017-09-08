@@ -1,5 +1,3 @@
-import java.sql.*;
-import java.util.ArrayList;
 public class Run{
 	
 	private String[] teams = {"Atlanta Hawks", "Boston Celtics", "Brooklyn Nets", "Charlotte Hornets",
@@ -11,45 +9,45 @@ public class Run{
 			"Utah Jazz", "Washington Wizards"};
 	
 	private Team[] tradeTeams;
+//	
+//	public ArrayList<String> teamsToTradeSetup(){
+//		ArrayList<String> teamNames = new ArrayList<String>();
+//		TradeMachineUI.printMainMenu();
+//		System.out.println();
+//		while (true){
+//			int menuAction = TradeMachineUI.getMenuAction(teamNames);
+//			if (menuAction == 1){
+//				if (teamNames.size() >=4 ){
+//					System.out.println("You can only add up to 4 teams.");
+//				}
+//				else{
+//					String teamToAdd = teams[TradeMachineUI.addTeamToTrade(teams)-1];
+//					if (teamNames.contains(teamToAdd)){
+//						System.out.println("This team has already been added.");
+//					}
+//					else{
+//						teamNames.add(teamToAdd);
+//					}
+//				}
+//			}
+//			else if (menuAction == 2){
+//				teamNames.remove(TradeMachineUI.removeTeam(teamNames)-1);
+//			}
+//			else if (menuAction == 3){
+//				if (teamNames.size() < 2){
+//					System.out.println("You must add at least 2 teams to trade.");
+//				}
+//				else{
+//					return teamNames;
+//				}
+//			}
+//			else{
+//				System.out.println("Invalid entry.");
+//			}
+//		}
+//	}
 	
-	public ArrayList<String> teamsToTradeSetup(){
-		ArrayList<String> teamNames = new ArrayList<String>();
-		TradeMachineUI.printMainMenu();
-		System.out.println();
-		while (true){
-			int menuAction = TradeMachineUI.getMenuAction(teamNames);
-			if (menuAction == 1){
-				if (teamNames.size() >=4 ){
-					System.out.println("You can only add up to 4 teams.");
-				}
-				else{
-					String teamToAdd = teams[TradeMachineUI.addTeamToTrade(teams)-1];
-					if (teamNames.contains(teamToAdd)){
-						System.out.println("This team has already been added.");
-					}
-					else{
-						teamNames.add(teamToAdd);
-					}
-				}
-			}
-			else if (menuAction == 2){
-				teamNames.remove(TradeMachineUI.removeTeam(teamNames)-1);
-			}
-			else if (menuAction == 3){
-				if (teamNames.size() < 2){
-					System.out.println("You must add at least 2 teams to trade.");
-				}
-				else{
-					return teamNames;
-				}
-			}
-			else{
-				System.out.println("Invalid entry.");
-			}
-		}
-	}
-	
-	public void grabTeamsFromDatabase(ArrayList<String> teams){
+/*	public void grabTeamsFromDatabase(ArrayList<String> teams){
 		this.tradeTeams = new Team[teams.size()];
 		try{
 			Class.forName("com.mysql.jdbc.Driver");
@@ -73,38 +71,44 @@ public class Run{
 		} catch (Exception e){
 			System.out.println("SQL Connectivity Error" + e);
 		}
-	}
+	}*/
 	
 	public String tradeMachine(){
-		TradeMachine trade = new TradeMachine(this.tradeTeams);
+		TradeMachineUI.printMainMenu();
+		TradeMachine trade = new TradeMachine();
 		TradeMachineUI.printTrades(trade.getTrades());
-		TradeMachineUI.printTeams(trade.getTeams());
+		TradeMachineUI.printTeams(trade.getTeams(), trade.getTeamCount());
 		while (true){
 			int action = TradeMachineUI.getTradeAction();
 			//adding player to trade
-			
 			if (action == 1){
-				Team tradeFrom = trade.getTeams()[TradeMachineUI.getTeamForTrade(trade.getTeams())-1];
+				trade.addTeamToTrade(teams[TradeMachineUI.addTeamToTrade(teams)-1]);
+			}
+			else if (action == 2){
+				trade.removeTeamFromTrade(trade.getTeams()[TradeMachineUI.removeTeam(trade.getTeams(), trade.getTeamCount())-1].getName());
+			}
+			else if (action == 3){
+				Team tradeFrom = trade.getTeams()[TradeMachineUI.getTeamForTrade(trade.getTeams(), trade.getTeamCount())-1];
 				if (tradeFrom.getRosterSize() > 0){
 					Player playerToTrade = tradeFrom.getRoster()[TradeMachineUI.getPlayer(tradeFrom)-1];
-					if (trade.getTeams().length > 2){
-						Team[] teamsRemaining = new Team[trade.getTeams().length-1];
-						int i = 0;
-						for (Team team : trade.getTeams()){
-							if (!team.getName().equals(tradeFrom.getName())){
-								teamsRemaining[i] = team;
-								i++;
+					if (trade.getTeamCount() > 2){
+						Team[] teamsRemaining = new Team[trade.getTeamCount()-1];
+						int index = 0;
+						for (int i=0; i<trade.getTeamCount(); i++){
+							if (!trade.getTeams()[i].getName().equals(tradeFrom.getName())){
+								teamsRemaining[index] = trade.getTeams()[i];
+								index++;
 							}
 						}
-						Team tradeTo = teamsRemaining[TradeMachineUI.getTeamForTradeTo(teamsRemaining)-1];
-						trade.addPlayerToTrade(playerToTrade, tradeTo.getName());
+						Team tradeTo = teamsRemaining[TradeMachineUI.getTeamForTradeTo(teamsRemaining, trade.getTeamCount())-1];
+						trade.addPlayerToTrade(tradeFrom, playerToTrade, tradeTo);
 					}
 					else{
 						if (tradeFrom.getName().equals(trade.getTeams()[0].getName())){
-							trade.addPlayerToTrade(playerToTrade, trade.getTeams()[1].getName());
+							trade.addPlayerToTrade(trade.getTeams()[0], playerToTrade, trade.getTeams()[1]);
 						}
 						else{
-							trade.addPlayerToTrade(playerToTrade, trade.getTeams()[0].getName());
+							trade.addPlayerToTrade(trade.getTeams()[1], playerToTrade, trade.getTeams()[0]);
 						}
 					}
 				}
@@ -112,15 +116,16 @@ public class Run{
 					System.out.println("There are no remaining players to trade on this team.");
 				}
 			}
-			else if (action == 2){
+			else if (action == 4){
 				if (trade.getTrades().size() == 0){
 					System.out.println("There are no players to remove from trade.");
 				}
 				else{
-					trade.deletePlayerFromTrade(trade.getTrades().get(TradeMachineUI.removePlayer(trade.getTrades())-1));
+					TradedPlayer tp = trade.getTrades().get(TradeMachineUI.removePlayer(trade.getTrades())-1);
+					trade.deletePlayerFromTrade(tp);
 				}
 			}
-			else if (action == 3){
+			else if (action == 5){
 				try{
 					if (trade.trade()){
 						System.out.println("This Trade is Successful!");
@@ -129,23 +134,23 @@ public class Run{
 					System.out.println("This Trade Failed.");
 				}
 			}
-			else if (action == 4){
+			else if (action == 6){
 				int tradeNum = trade.getTrades().size();
 				for (int i=0; i<tradeNum; i++){
 					trade.deletePlayerFromTrade(trade.getTrades().get(0));
 				}
 			}
-			else if (action == 5){
+			else if (action == 7){
 				return "Restart";
 			}
-			else if (action == 6){
+			else if (action == 8){
 				return "Quit";
 			}
 			else{
 				System.out.println("Invalid entry.");
 			}
 			TradeMachineUI.printTrades(trade.getTrades());
-			TradeMachineUI.printTeams(trade.getTeams());
+			TradeMachineUI.printTeams(trade.getTeams(), trade.getTeamCount());
 		}
 	}
 	
@@ -154,8 +159,8 @@ public class Run{
 	}
 	
 	public void runTradeMachine(){
-		ArrayList<String> teams = teamsToTradeSetup();
-		grabTeamsFromDatabase(teams);
+		//ArrayList<String> teams = teamsToTradeSetup();
+	//	grabTeamsFromDatabase(teams);
 		if (tradeMachine().equals("Restart")){
 			runTradeMachine();
 		}
